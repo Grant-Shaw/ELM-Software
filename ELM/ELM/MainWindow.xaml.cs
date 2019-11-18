@@ -156,14 +156,19 @@ namespace ELM
             using (StreamWriter file2 = new StreamWriter(MessageFilter.QuarantinePath, true))
             {
                 file2.WriteLine("Messages quarantined during session: " + DateTime.Now);
+                file2.WriteLine();
                 foreach (String s in MessageFilter.emailList)
-                    file2.WriteLine(s);
-
-                file2.WriteLine("Incident occurred during session: " + DateTime.Now);
-                foreach (string s in MessageFilter.incidentList)
-                    file2.WriteLine(s);
-
+                    file2.WriteLine(s);              
                 file2.Close();
+            }
+
+            using (StreamWriter file3 = new StreamWriter(MessageFilter.SIRpath, true))
+            {
+
+                file3.WriteLine("Incidents that occurred during session: " + DateTime.Now);
+                file3.WriteLine();
+                for(int x = 0; x < MessageFilter.incidentList.Count; x+=2)
+                    file3.WriteLine(MessageFilter.incidentList[x]);
 
             }
 

@@ -114,11 +114,11 @@ namespace ELM
                 {
                     if (MessageText.Contains(s))
                     {
-                        incident = String.Format("Sport centre Code: {0} \n Nature of Incident: {1}", s, centreCode);
+                        incident = string.Format("Sport centre Code: {0} \n Nature of Incident: {1}", centreCode, s);
 
                         if (!MessageFilter.incidentDescriptions.Contains(incident))
-                            MessageFilter.incidentList.Add(incident);
-
+                              MessageFilter.incidentList.Add(incident);
+                                
                     }
                 }
             }

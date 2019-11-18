@@ -27,6 +27,7 @@ namespace ELM
         public static string QuarantinePath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\QuarantineList.txt");
         public static string textSpeakPath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\textwords.csv");
         public static string incidentPath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\incidentList.txt");
+        public static string SIRpath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\SIR List.txt");
 
         public static List<string> incidentList = new List<string>();
         public static List<string> emailList = new List<string>();
