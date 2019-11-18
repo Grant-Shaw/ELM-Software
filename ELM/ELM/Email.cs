@@ -79,7 +79,8 @@ namespace ELM
                 this.FindSubject();
                 if (MessageType == "SIR")
                 {
-                    IncidentHandler();
+                    NatureOfIncident(centreCodeFinder());   
+                    
                 }
                 this.QuarantineEmails();
                 MessageFilter.dict.Remove("EMA");
@@ -99,32 +100,63 @@ namespace ELM
                          
         }
 
-        private void IncidentHandler()
+
+
+        private void NatureOfIncident(string code)
         {
             try
             {
-                Regex centreCodeFinder = new Regex(@"\d{2}-\d{3}-\d{3}", RegexOptions.IgnoreCase);
-                MatchCollection centreCodeMatches = centreCodeFinder.Matches(MessageText);
-
-                string incident;
-
-                string centreCode = centreCodeMatches[0].Value;
-
+                
                 foreach (string s in MessageFilter.incidentDescriptions)
                 {
-                    if (MessageText.Contains(s))
-                    {
-                        incident = string.Format("Sport centre Code: {0} \n Nature of Incident: {1}", centreCode, s);
 
+                    if (MessageFilter.incidentDescriptions.Contains(MessageText))
+                    {
+                        //format string for SIR list to contain centre code and nature of incident.
+                        string incident = string.Format("Sport centre Code: {0},  Nature of Incident: {1}", code, s);
+
+                        //if a match is found that isn't in the SIR list , add it
                         if (!MessageFilter.incidentDescriptions.Contains(incident))
-                              MessageFilter.incidentList.Add(incident);
-                                
-                    }
+                        { MessageFilter.incidentList.Add(incident); }
+
+                    }     
+                                    
                 }
+               
+                
+            }
+
+            catch(Exception U)
+            {
+                throw new Exception(U.Message);
+            }
+
+
+
+        }
+
+        private string centreCodeFinder()
+        {
+            try
+            {
+                //searches for centre code matches in the text in format xx-xxx-xxx
+                Regex centreCodeFinder = new Regex(@"\d{2}-\d{3}-\d{3}", RegexOptions.IgnoreCase);
+                MatchCollection centreCodeMatches = centreCodeFinder.Matches(MessageText);
+                if (centreCodeMatches[0].Value == null)
+                throw new Exception("Centre code invalid");                   
+                else
+                {
+                    string centreCode = centreCodeMatches[0].Value;
+                    return centreCode;
+                }
+                
+                
             }
             catch(Exception h)
             {
-                MessageBox.Show("Please ensure that your SIR centre code and incident type is valid");
+                
+                throw new Exception(h.Message);
+                
             }
         
         }
