@@ -76,13 +76,23 @@ namespace ELM
             MessageType = "SMS";
 
             this.FindSender();
+            FilterTextSpeak();
 
+            
+
+        }
+
+
+
+        private void FilterTextSpeak()
+        {
             foreach (var entry in MessageFilter.dict)
             {
                 MessageText = MessageText.Replace(" " + entry.Key, " " + entry.Key + "<" + entry.Value + ">");
             }
-
         }
+
+
 
         //method which determines the sender of the SMS from the first phone number found in the message body.
         private void FindSender()

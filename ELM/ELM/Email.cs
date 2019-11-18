@@ -27,6 +27,7 @@ namespace ELM
         private string messageText;
         private string subject;
         private string messagetype;
+        
 
 
 
@@ -71,9 +72,10 @@ namespace ELM
 
         public Email(string m) : base(m)
         {          
-                MessageText = m;
-                MessageType = "Email";
+                MessageText = m;                
                 this.FindSender();
+                this.FindSubject();
+
                 this.QuarantineEmails();
                 MessageFilter.dict.Remove("EMA");
                 foreach (var entry in MessageFilter.dict)
@@ -84,9 +86,40 @@ namespace ELM
                
         }
 
+        private void IncidentHandler()
+        {
+
+            Regex centreCodeFinder = new Regex(@"^.*([0-9]{2})-([0-9]{3})-([0-9]{3})$", RegexOptions.IgnoreCase);
+            MatchCollection centreCodeMatches = centreCodeFinder.Matches(MessageText);
 
 
 
+
+
+        }
+
+
+        private void FindSubject()
+        {
+            var subject1 = MessageText.Substring(0, 20);
+
+            if (subject1.Contains("SIR"))
+            {
+                MessageType = "SIR";
+                Subject = subject1.Substring(0, 14);
+                MessageText = MessageText.Replace(Subject, "");
+            }
+            else
+            {
+                MessageType = "Email";
+                Subject = subject1;
+                MessageText = MessageText.Replace(Subject, "");
+            }
+            
+        }
+
+
+        //adds email addresses within messagetext to quarantine list.
         private void QuarantineEmails()
         {
             for (int i = 1; i < MessageFilter.emailList.Count; i++)
@@ -97,12 +130,13 @@ namespace ELM
 
         }
 
-
+        //method which finds the sender of the Email by using regex to search for first email address.
 
         private void FindSender()
         {
 
             //var EmailRegex = new Regex(@"(?:(?:\+?([1-9]|[0-9][0-9]|[0-9][0-9][0-9])\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([0-9][1-9]|[0-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?", RegexOptions.IgnoreCase);
+            
 
             Regex emailRegex = new Regex(@"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}", RegexOptions.IgnoreCase);
             try
