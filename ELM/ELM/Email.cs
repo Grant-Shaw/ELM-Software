@@ -28,6 +28,7 @@ namespace ELM
         private string subject;
         private string messagetype;
         
+        
 
 
 
@@ -43,8 +44,7 @@ namespace ELM
             get { return subject; }
             set { subject = value; }
         }
-
-
+     
         public override string Sender
         {
             get { return sender; }
@@ -73,9 +73,12 @@ namespace ELM
         public Email(string m) : base(m)
         {          
                 MessageText = m;                
-                this.FindSender();
+                this.FindSender();               
                 this.FindSubject();
-
+            if (MessageType == "SIR")
+            {
+                IncidentHandler();
+            }
                 this.QuarantineEmails();
                 MessageFilter.dict.Remove("EMA");
                 foreach (var entry in MessageFilter.dict)
@@ -83,25 +86,38 @@ namespace ELM
                     MessageText = MessageText.Replace(" " + entry.Key + " ", " " + entry.Key + "<" + entry.Value + ">");
 
                 }
-               
+
+                         
         }
 
         private void IncidentHandler()
         {
-
-            Regex centreCodeFinder = new Regex(@"^.*([0-9]{2})-([0-9]{3})-([0-9]{3})$", RegexOptions.IgnoreCase);
-            MatchCollection centreCodeMatches = centreCodeFinder.Matches(MessageText);
-
-
+            
+                Regex centreCodeFinder = new Regex(@"\d{2}-\d{3}-\d{3}", RegexOptions.IgnoreCase);
+                MatchCollection centreCodeMatches = centreCodeFinder.Matches(MessageText);
 
 
+                string incident;
 
+                string centreCode = centreCodeMatches[0].Value;
+
+                foreach (string s in MessageFilter.incidentDescriptions)
+                {
+                    if (MessageText.Contains(s))
+                    {
+                        incident = String.Format("Sport centre Code: {0} \n Nature of Incident: {1}", s, centreCode);
+                        MessageFilter.incidentList.Add(incident);
+                        
+                    }
+                }
+        
         }
 
 
+        //finds the subject of the Email by using substrings
         private void FindSubject()
         {
-            var subject1 = MessageText.Substring(0, 20);
+            var subject1 = MessageText.Substring(0, 21);
 
             if (subject1.Contains("SIR"))
             {
@@ -139,12 +155,12 @@ namespace ELM
             
 
             Regex emailRegex = new Regex(@"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}", RegexOptions.IgnoreCase);
-            try
-            {
+            
                 MatchCollection matches = emailRegex.Matches(MessageText);
 
-                //make the Sender the first email address found
-                Sender = matches[0].Value;
+            //make the Sender the first email address found
+              
+               Sender = matches[0].Value;
 
 
 
@@ -165,12 +181,6 @@ namespace ELM
 
                 MessageText = MessageText.Replace(Sender, " ");
                 //MessageText = MessageText.Remove(0, 11);
-
-            }
-            catch (Exception p)
-            {
-                MessageBox.Show("You must have a valid sender Email");
-            }
 
         }
     }

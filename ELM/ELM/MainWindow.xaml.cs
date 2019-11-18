@@ -108,9 +108,12 @@ namespace ELM
                     }
                     else
                     {
-                        SMSMessageList.Add(new SMS(Convert.ToString(inputBody.Text)));
-                        string jsonSMS = JsonConvert.SerializeObject(newSMS, Formatting.Indented);
-                        outputBody.Text = jsonSMS;
+                       
+                            SMSMessageList.Add(new SMS(Convert.ToString(inputBody.Text)));
+                            string jsonSMS = JsonConvert.SerializeObject(newSMS, Formatting.Indented);
+                            outputBody.Text = jsonSMS;
+                        
+                        
                     }
                 }
             }
@@ -154,6 +157,10 @@ namespace ELM
             {
                 file2.WriteLine("Messages quarantined during session: " + DateTime.Now);
                 foreach (String s in MessageFilter.emailList)
+                    file2.WriteLine(s);
+
+                file2.WriteLine("Incident occurred during session: " + DateTime.Now);
+                foreach (string s in MessageFilter.incidentList)
                     file2.WriteLine(s);
 
                 file2.Close();
