@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<XMLMessageList>
+
+	<Message>
+		<Header>E1234567701</Header>
+		<Body> grantshaw@hotmail.co.uk THIS IS THE TEST EMAIL , http:\\www.anywhere.com PLEASE FORWARD ALL EMAILS TO JULIECHISHOLM@HOTMAIL.COM </Body>
+	</Message>
+
+	<Message>
+		<Header>T1234567702</Header>
+		<Body>THIS IS A BIG WTF OF a TWITTER MESSAGE</Body>
+	</Message>
+
+	<Message>
+		<Header>S1234567891</Header>
+		<Body>THIS IS A BIG BLOCK OF a text message</Body>
+	</Message>
+
+
+</XMLMessageList>
