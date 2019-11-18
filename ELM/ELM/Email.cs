@@ -71,14 +71,16 @@ namespace ELM
 
 
         public Email(string m) : base(m)
-        {          
-                MessageText = m;                
-                this.FindSender();               
-                this.FindSubject();
-            if (MessageType == "SIR")
+        {
+            try
             {
-                IncidentHandler();
-            }
+                MessageText = m;
+                this.FindSender();
+                this.FindSubject();
+                if (MessageType == "SIR")
+                {
+                    IncidentHandler();
+                }
                 this.QuarantineEmails();
                 MessageFilter.dict.Remove("EMA");
                 foreach (var entry in MessageFilter.dict)
@@ -87,15 +89,22 @@ namespace ELM
 
                 }
 
+            }
+            catch(Exception n)
+            {
+                MessageBox.Show(n.Message);
+
+            }
+
                          
         }
 
         private void IncidentHandler()
         {
-            
+            try
+            {
                 Regex centreCodeFinder = new Regex(@"\d{2}-\d{3}-\d{3}", RegexOptions.IgnoreCase);
                 MatchCollection centreCodeMatches = centreCodeFinder.Matches(MessageText);
-
 
                 string incident;
 
@@ -106,10 +115,17 @@ namespace ELM
                     if (MessageText.Contains(s))
                     {
                         incident = String.Format("Sport centre Code: {0} \n Nature of Incident: {1}", s, centreCode);
-                        MessageFilter.incidentList.Add(incident);
-                        
+
+                        if (!MessageFilter.incidentDescriptions.Contains(incident))
+                            MessageFilter.incidentList.Add(incident);
+
                     }
                 }
+            }
+            catch(Exception h)
+            {
+                MessageBox.Show("Please ensure that your SIR centre code and incident type is valid");
+            }
         
         }
 
@@ -117,20 +133,32 @@ namespace ELM
         //finds the subject of the Email by using substrings
         private void FindSubject()
         {
-            var subject1 = MessageText.Substring(0, 21);
 
-            if (subject1.Contains("SIR"))
+            try
             {
-                MessageType = "SIR";
-                Subject = subject1.Substring(0, 14);
-                MessageText = MessageText.Replace(Subject, "");
+                var subject1 = MessageText.Substring(0, 21);
+
+
+                if (subject1.Contains("SIR"))
+                {
+                    MessageType = "SIR";
+                    Subject = subject1.Substring(0, 14);
+                    MessageText = MessageText.Replace(Subject, "");
+                }
+                else
+                {
+                    MessageType = "Email";
+                    subject1 = subject1.Split('.')[0];
+                    Subject = subject1;
+                    MessageText = MessageText.Replace(Subject, "");
+                    MessageText = MessageText.Substring(1);
+
+                }
             }
-            else
+            catch(Exception v)
             {
-                MessageType = "Email";
-                Subject = subject1;
-                MessageText = MessageText.Replace(Subject, "");
-            }
+                throw new Exception("Please ensure that your subject is in either standard (less than 20 characters) or SIR format");
+             }
             
         }
 
@@ -138,10 +166,9 @@ namespace ELM
         //adds email addresses within messagetext to quarantine list.
         private void QuarantineEmails()
         {
-            for (int i = 1; i < MessageFilter.emailList.Count; i++)
+            foreach (string email in MessageFilter.emailList)
             {
-                MessageText = MessageText.Replace(MessageFilter.emailList[i], " " + "<Email has been quarantined>" + " ");
-
+                MessageText = MessageText.Replace(email, "" + "<This email has been quarantined> ");
             }
 
         }
@@ -152,15 +179,17 @@ namespace ELM
         {
 
             //var EmailRegex = new Regex(@"(?:(?:\+?([1-9]|[0-9][0-9]|[0-9][0-9][0-9])\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([0-9][1-9]|[0-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?", RegexOptions.IgnoreCase);
-            
 
-            Regex emailRegex = new Regex(@"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}", RegexOptions.IgnoreCase);
-            
+            try
+            {
+
+                Regex emailRegex = new Regex(@"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}", RegexOptions.IgnoreCase);
+
                 MatchCollection matches = emailRegex.Matches(MessageText);
 
-            //make the Sender the first email address found
-              
-               Sender = matches[0].Value;
+                //make the Sender the first email address found
+
+                Sender = matches[0].Value;
 
 
 
@@ -181,6 +210,14 @@ namespace ELM
 
                 MessageText = MessageText.Replace(Sender, " ");
                 //MessageText = MessageText.Remove(0, 11);
+            }
+
+            catch(Exception v)
+            {
+                throw new Exception("Please ensure that the senders email is a valid email address");
+            }
+            
+
 
         }
     }

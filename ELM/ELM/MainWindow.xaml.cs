@@ -120,7 +120,7 @@ namespace ELM
 
             catch (Exception f)
             {
-                MessageBox.Show(f.Message);
+                MessageBox.Show("Something went wrong, please ensure message is formatted properly for the message type");
             }
 
 
