@@ -27,7 +27,7 @@ namespace ELM
     {
         //creates an object which stores a list of XML objects
         XMLMessageList XmlData;
-        XMLDeserializer DataProcessor = new XMLDeserializer();
+        XMLDeserializer DataProcessor;
 
         List<SMS> SMSMessageList = new List<SMS>();
         List<Email> emailMessageList = new List<Email>();
@@ -40,12 +40,20 @@ namespace ELM
         {
             //create a new Serialization object
             //use the Serialization object's deserialize method to read the data from XML file and add to list in XmlData object
-            
-            XmlData = DataProcessor.deserializeXML();
-            InitializeComponent();
+            try
+            {
+                DataProcessor = new XMLDeserializer();
+                XmlData = DataProcessor.deserializeXML();
+                InitializeComponent();
 
-            inputHeader.Text = XmlData.messageList[i].Header;
-            inputBody.Text = XmlData.messageList[y].Body;
+                inputHeader.Text = XmlData.messageList[i].Header;
+                inputBody.Text = XmlData.messageList[y].Body;
+            }
+
+            catch(Exception t)
+            {
+                MessageBox.Show(t.Message);
+            }
 
 
         }
@@ -118,7 +126,7 @@ namespace ELM
 
             catch (Exception f)
             {
-                MessageBox.Show("Something went wrong, please ensure message is formatted properly for the message type");
+                MessageBox.Show("Something went wrong, please ensure the message and header are valid");
             }
 
 

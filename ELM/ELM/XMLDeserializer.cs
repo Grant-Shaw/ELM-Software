@@ -12,13 +12,23 @@ namespace ELM
     {
         public XMLMessageList deserializeXML()
         {
-            XmlSerializer deserializer = new XmlSerializer(typeof(XMLMessageList));
-            var path = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\Messages.xml");
-            TextReader reader = new StreamReader(path);
-            object obj = deserializer.Deserialize(reader);
-            XMLMessageList Data = (XMLMessageList)obj;
-            reader.Close();
-            return Data;
+            try
+            {
+
+                XmlSerializer deserializer = new XmlSerializer(typeof(XMLMessageList));
+                var path = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\Messages.xml");
+                TextReader reader = new StreamReader(path);
+                object obj = deserializer.Deserialize(reader);
+
+                XMLMessageList Data = (XMLMessageList)obj;
+                reader.Close();
+                return Data;
+            }
+
+            catch(Exception e)
+            {
+                throw new Exception("No XML file found");
+            }
         }
 
     }
