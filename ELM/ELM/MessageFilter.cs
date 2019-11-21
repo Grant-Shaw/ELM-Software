@@ -31,7 +31,10 @@ namespace ELM
 
         public static List<string> incidentList = new List<string>();
         public static List<string> emailList = new List<string>();
+        public static List<string> mentionList = new List<string>();
+        public static List<string> hashtagList = new List<string>();
         public static Dictionary<string, string> dict = File.ReadLines(textSpeakPath).Select(line => line.Split(',')).ToDictionary(line => line[0], line => line[1]);
+       
         public static List<string> incidentDescriptions = File.ReadAllLines(incidentPath).ToList();
           
 

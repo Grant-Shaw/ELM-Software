@@ -34,7 +34,8 @@ namespace ELM
 
         public string MessageType
         {
-            get { return messagetype; }
+            get 
+            { return messagetype; }
             set { messagetype = value; }
         }
 
@@ -83,7 +84,7 @@ namespace ELM
                     
                 }
                 this.QuarantineEmails();
-                MessageFilter.dict.Remove("EMA");
+                
                 foreach (var entry in MessageFilter.dict)
                 {
                     MessageText = MessageText.Replace(" " + entry.Key + " ", " " + entry.Key + "<" + entry.Value + ">");

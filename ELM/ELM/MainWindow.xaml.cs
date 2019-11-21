@@ -27,8 +27,7 @@ namespace ELM
     {
         //creates an object which stores a list of XML objects
         XMLMessageList XmlData;
-        XMLDeserializer DataProcessor;
-
+        XMLDeserializer DataProcessor;      
         List<SMS> SMSMessageList = new List<SMS>();
         List<Email> emailMessageList = new List<Email>();
         List<Tweet> tweetMessageList = new List<Tweet>();
@@ -44,6 +43,7 @@ namespace ELM
             {
                 DataProcessor = new XMLDeserializer();
                 XmlData = DataProcessor.deserializeXML();
+                MessageFilter.dict.Remove("EMA");
                 InitializeComponent();
 
                 inputHeader.Text = XmlData.messageList[i].Header;
@@ -177,6 +177,7 @@ namespace ELM
 
             }
 
+            MessageBox.Show("Saved to JSON");
 
         }
     }

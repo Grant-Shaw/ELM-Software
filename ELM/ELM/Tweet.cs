@@ -3,6 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Newtonsoft.Json;
+using System.Xml.Linq;
+using System.Xml.Serialization;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace ELM
 {
@@ -11,9 +25,9 @@ namespace ELM
 
         private string messageText;
         private string sender;
+        private string messagetype;
 
-        public List<string> hashtags;
-        public List<string> mentions;
+        
 
         public override string Sender
         {
@@ -21,26 +35,101 @@ namespace ELM
             set { sender = value; }
         }
 
+        public string MessageType
+        {
+            get
+            { return messagetype; }
+            set { messagetype = value; }
+        }
+
         public override string MessageText
         {
             get { return messageText; }
-            set { messageText = value; }
+            set
+            {
+
+                if (value.Length > 140)
+                {
+                    throw new Exception("Tweet cannot be longer than 140 characters");
+                }
+                else
+                {
+                    messageText = value;
+                }
+            }
 
         }
-
-
+            
         public Tweet(string m) : base(m)
         {
             this.MessageText = m;
+            FindSender();
+            MessageType = "Tweet";
+            FilterTextSpeak();
+            FindHashtags();
 
-            hashtags = new List<string>();
-            mentions = new List<string>();
+
+        }
+
+        private void FilterTextSpeak()
+        {
+            foreach (var entry in MessageFilter.dict)
+            {
+                MessageText = MessageText.Replace(" " + entry.Key, " " + entry.Key + "<" + entry.Value + ">");
+            }
+        }
+
+        private void FindHashtags()
+        {
+            Regex hashtagRegex = new Regex(@"/(^|\B)#(?![0-9_]+\b)([a-zA-Z0-9_]{1,30})(\b|\r)/g", RegexOptions.IgnoreCase);
+            MatchCollection matches = hashtagRegex.Matches(MessageText);
+
+            foreach(Match m in matches)
+            {
+                MessageFilter.hashtagList.Add(m.Value);
+            }
+
 
         }
 
         private void FindSender()
         {
-            throw new NotImplementedException();
+            try
+            {
+
+                Regex tweetRegex = new Regex(@"^@[a-zA-Z](\.?[\w-]+)*$", RegexOptions.IgnoreCase);
+
+                MatchCollection matches = tweetRegex.Matches(MessageText);
+
+                //make the Sender the first @mention found address found
+
+                Sender = matches[0].Value;
+
+                //add all other mentions to a list
+
+                foreach (Match m in matches)
+                {
+                    if (MessageFilter.mentionList.Contains(m.Value))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        MessageFilter.mentionList.Add(m.Value);
+                        MessageFilter.mentionList.Remove(Sender);
+                    }
+                }
+
+                //remove the Sender from the message body
+                MessageText = MessageText.Replace(Sender, " ");
+                //MessageText = MessageText.Remove(0, 11);
+            }
+
+            catch (Exception v)
+            {
+                throw new Exception("Please ensure that the senders username is valid");
+            }
+
         }
 
     }
