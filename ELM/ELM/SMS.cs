@@ -51,10 +51,8 @@ namespace ELM
 
         //property for the messageBody which checks to ensure that the message does not exceed 140 characters (151 to include sneder as it's read in).
         public override string MessageText
-
         {
             get { return messageText; }
-
             set
             {
                 if (value.Length > 151)
@@ -66,22 +64,17 @@ namespace ELM
                     messageText = value;
                 }
             }
-
         }
 
         //constructor for SMS
         //Calls method findSender to determine the Sender.
         public SMS(string m) : base(m)
         {
-
             MessageText = m;
             MessageType = "SMS";
 
             this.FindSender();
-            FilterTextSpeak();
-
-            
-
+            FilterTextSpeak();         
         }
 
 

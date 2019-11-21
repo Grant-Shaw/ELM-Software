@@ -178,12 +178,12 @@ namespace ELM
                 file.Close();
             }
            
-            //writes all quarantines emails to file
+            //writes all quarantines URL's to file
             using (StreamWriter file2 = new StreamWriter(MessageFilter.QuarantinePath, true))
             {
-                file2.WriteLine("Messages quarantined during session: " + DateTime.Now);
+                file2.WriteLine("URL's quarantined during session: " + DateTime.Now);
                 file2.WriteLine();
-                foreach (String s in MessageFilter.emailList)
+                foreach (String s in MessageFilter.URLlist)
                     file2.WriteLine(s);              
                 file2.Close();
             }

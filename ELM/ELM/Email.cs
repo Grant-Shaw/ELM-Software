@@ -84,7 +84,7 @@ namespace ELM
                     NatureOfIncident(centreCode);   
                     
                 }
-                this.QuarantineEmails();
+                this.QuarantineURLs();
                 
                 foreach (var entry in MessageFilter.dict)
                 {
@@ -135,19 +135,13 @@ namespace ELM
                 {
                     centreCode = centreCodeMatches[0].Value;
                     
-                }
-                
-                
+                }                            
             }
             catch(Exception h)
-            {
-                
-                throw new Exception("centre code invalid");
-                
-            }
-        
+            {               
+                throw new Exception("centre code invalid");               
+            }       
         }
-
 
         //finds the subject of the Email by using substrings
         private void FindSubject()
@@ -183,11 +177,30 @@ namespace ELM
 
 
         //adds email addresses within messagetext to quarantine list.
-        private void QuarantineEmails()
+        private void QuarantineURLs()
         {
-            foreach (string email in MessageFilter.emailList)
+
+            Regex URLRegex = new Regex(@"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?", RegexOptions.IgnoreCase);
+
+            MatchCollection matches = URLRegex.Matches(MessageText);
+
+            foreach (Match m in matches)
             {
-                MessageText = MessageText.Replace(email, "" + "<This email has been quarantined> ");
+                if (MessageFilter.URLlist.Contains(m.Value))
+                {
+                    continue;
+                }
+                else
+                {
+                    MessageFilter.URLlist.Add(m.Value);
+                    
+                }
+            }
+
+
+            foreach (string URL in MessageFilter.URLlist)
+            {
+                MessageText = MessageText.Replace(URL, "" + "<This URL has been quarantined> ");
             }
 
         }
@@ -201,32 +214,19 @@ namespace ELM
 
             try
             {
-
-                Regex emailRegex = new Regex(@"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}", RegexOptions.IgnoreCase);
-
-                MatchCollection matches = emailRegex.Matches(MessageText);
+                
+                //regex which finds email addresses
+                Regex EmailRegex = new Regex(@"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}", RegexOptions.IgnoreCase);
+                //
+                //add all found email addresses to a MatchCollection
+                MatchCollection matches = EmailRegex.Matches(MessageText);
 
                 //make the Sender the first email address found
 
                 Sender = matches[0].Value;
 
-
-
                 //add all other email addresses to a list
-
-                foreach (Match m in matches)
-                {
-                    if (MessageFilter.emailList.Contains(m.Value))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        MessageFilter.emailList.Add(m.Value);
-                        MessageFilter.emailList.Remove(Sender);
-                    }
-                }
-
+                
                 MessageText = MessageText.Replace(Sender, " ");
                 //MessageText = MessageText.Remove(0, 11);
             }

@@ -32,7 +32,7 @@ namespace ELM
         public static string mentionPath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\MentionList.txt");
 
         public static List<string> incidentList = new List<string>();
-        public static List<string> emailList = new List<string>();
+        public static List<string> URLlist = new List<string>();
         public static List<string> mentionList = new List<string>();
         public static List<string> hashtagList = new List<string>();
         public static List<string> hashtagOccurence = new List<string>();
