@@ -27,6 +27,7 @@ namespace ELM
         private string messageText;
         private string subject;
         private string messagetype;
+        private string centreCode;
         
         
 
@@ -70,7 +71,7 @@ namespace ELM
 
 
 
-
+        //constructor for Email
         public Email(string m) : base(m)
         {
             try
@@ -80,7 +81,7 @@ namespace ELM
                 this.FindSubject();
                 if (MessageType == "SIR")
                 {
-                    NatureOfIncident(centreCodeFinder());   
+                    NatureOfIncident(centreCode);   
                     
                 }
                 this.QuarantineEmails();
@@ -88,7 +89,6 @@ namespace ELM
                 foreach (var entry in MessageFilter.dict)
                 {
                     MessageText = MessageText.Replace(" " + entry.Key + " ", " " + entry.Key + "<" + entry.Value + ">");
-
                 }
 
             }
@@ -97,45 +97,32 @@ namespace ELM
                 MessageBox.Show(n.Message);
 
             }
-
-                         
+                        
         }
 
 
-
+        //a method which adds the incident code and the nature of the incident to a list.
         private void NatureOfIncident(string code)
         {
             try
             {
-                
-                foreach (string s in MessageFilter.incidentDescriptions)
-                {
+                //using LINQ to find any matches within the messageText which match valid incident descriptions.
+                var result = MessageFilter.incidentDescriptions.Where(t => MessageText.Contains(t)).ToList();
 
-                    if (MessageFilter.incidentDescriptions.Contains(MessageText))
-                    {
-                        //format string for SIR list to contain centre code and nature of incident.
-                        string incident = string.Format("Sport centre Code: {0},  Nature of Incident: {1}", code, s);
-
-                        //if a match is found that isn't in the SIR list , add it
-                        if (!MessageFilter.incidentDescriptions.Contains(incident))
-                        { MessageFilter.incidentList.Add(incident); }
-
-                    }     
-                                    
-                }
-                              
+                //format string for SIR list to contain centre code and nature of incident.                
+                string incident = string.Format("Sport centre Code: {0},  Nature of Incident: {1}", code, result[0]);
+                        MessageFilter.incidentList.Add(incident);                                                                                                                   
             }
-
             catch(Exception U)
             {
-                throw new Exception(U.Message);
+                throw new Exception("Nature of incident invalid, do not press finished until fixed.");
             }
 
 
 
         }
 
-        private string centreCodeFinder()
+        private void centreCodeFinder()
         {
             try
             {
@@ -146,8 +133,8 @@ namespace ELM
                 throw new Exception("Centre code invalid");                   
                 else
                 {
-                    string centreCode = centreCodeMatches[0].Value;
-                    return centreCode;
+                    centreCode = centreCodeMatches[0].Value;
+                    
                 }
                 
                 
@@ -155,7 +142,7 @@ namespace ELM
             catch(Exception h)
             {
                 
-                throw new Exception(h.Message);
+                throw new Exception("centre code invalid");
                 
             }
         

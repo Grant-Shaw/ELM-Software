@@ -63,18 +63,23 @@ namespace ELM
             try
             {
                 inputHeader.Text = XmlData.messageList[i += 1].Header;
-                inputBody.Text = XmlData.messageList[y += 1].Body;
+            }
+            catch (Exception) { MessageBox.Show("No more messages to display"); }
 
-            }
-            catch (Exception)
+            try
             {
-                MessageBox.Show("No more messages to display");
+                inputBody.Text = XmlData.messageList[y += 1].Body;
             }
+            catch (Exception) { MessageBox.Show("No more messages to display"); }
+
+
         }
 
         //on button click , determines the Message type by the MessageID
         private void ProcessBtn_Click(object sender, RoutedEventArgs e)
         {
+           
+
             try
             {
                 //reads the first character from the header and determines which object type to create based on that.
@@ -83,8 +88,21 @@ namespace ELM
 
                 if (headerArray[0] == 'T')
                 {
+                    //creates a message object for validation purposes.
                     Tweet newTweet = new Tweet(Convert.ToString(inputBody.Text));
-                    tweetMessageList = new List<Tweet>();
+
+                    if (newTweet.Sender == null)
+                    {
+                        throw new Exception("Message cannot be processed , please ensure tweet has a valid sender");
+                    }
+                    else
+                    {
+                        tweetMessageList.Add(newTweet);
+                        //tweetMessageList.Add(new Tweet(Convert.ToString(inputBody.Text)));
+                        string jsonTweet = JsonConvert.SerializeObject(newTweet, Formatting.Indented);
+                        outputBody.Text = jsonTweet;
+
+                    }
                 }
 
                 if (headerArray[0] == 'E')
@@ -92,15 +110,13 @@ namespace ELM
                     Email newEmail = new Email(Convert.ToString(inputBody.Text));
                     if (newEmail.Sender == null)
                     {
-                        MessageBox.Show("Message cannot be processed, Please ensure email has a subject and a sender");
+                        throw new Exception("Message cannot be processed, Please ensure email has a subject and a sender");
                     }
                     else
                     {
-                        emailMessageList.Add(new Email(Convert.ToString(inputBody.Text)));
+                        emailMessageList.Add(newEmail);
                         string jsonEmail = JsonConvert.SerializeObject(newEmail, Formatting.Indented);
                         outputBody.Text = jsonEmail;
-
-
                     }
 
                 }
@@ -112,53 +128,57 @@ namespace ELM
                     SMS newSMS = new SMS(inputBody.Text);
                     if (newSMS.Sender == null)
                     {
-                        MessageBox.Show("Message cannot be stored, no sender found");
+                        throw new Exception("Message cannot be stored, no sender found");
                     }
                     else
                     {                    
-                            SMSMessageList.Add(new SMS(Convert.ToString(inputBody.Text)));
+                            SMSMessageList.Add(newSMS);
                             string jsonSMS = JsonConvert.SerializeObject(newSMS, Formatting.Indented);
                             outputBody.Text = jsonSMS;
                                               
                     }
                 }
             }
-
             catch (Exception f)
             {
-                MessageBox.Show("Something went wrong, please ensure the message and header are valid");
+                MessageBox.Show(f.Message);
             }
-
 
         }
 
+        //this saved everything to JSON file , creates a list of quarantined emails and creates a serious incident report.
         private void FinishBtn_Click(object sender, RoutedEventArgs e)
         {
-            
+            //add show numbers of occurences of a hashtag.
+            foreach (var grp in MessageFilter.hashtagList.GroupBy(i => i))
+            {
+                MessageFilter.hashtagOccurence.Add(grp.Key + ":  " + grp.Count());
+            }
 
+            //writes all json messages to file.
             using (StreamWriter file = new StreamWriter(MessageFilter.JSONpath, true))
             {
                 file.WriteLine("This is a compiled list of messages");
                 JsonSerializer serializer = new JsonSerializer();
                 //serialize object directly into file stream
                 if (SMSMessageList != null)
-                    serializer.Serialize(file, SMSMessageList);
-                file.WriteLine();
-                if (emailMessageList != null)
                 {
-                    foreach (var s in emailMessageList)
-                    {
-                        file.WriteLine("");
+                    serializer.Serialize(file, SMSMessageList);
+                }
+                
+                if (emailMessageList != null)
+                {foreach (var s in emailMessageList)
+                    {                    
                         serializer.Serialize(file, s);
                     }
-                    //serializer.Serialize(file, emailMessageList);
                 }
                 if (tweetMessageList != null)
-                    serializer.Serialize(file, tweetMessageList);
+                { serializer.Serialize(file, tweetMessageList); }
 
                 file.Close();
             }
            
+            //writes all quarantines emails to file
             using (StreamWriter file2 = new StreamWriter(MessageFilter.QuarantinePath, true))
             {
                 file2.WriteLine("Messages quarantined during session: " + DateTime.Now);
@@ -168,6 +188,7 @@ namespace ELM
                 file2.Close();
             }
 
+            //writes list of SIR to file.
             using (StreamWriter file3 = new StreamWriter(MessageFilter.SIRpath, true))
             {
 
@@ -177,8 +198,37 @@ namespace ELM
 
             }
 
-            MessageBox.Show("Saved to JSON");
+            //writes list of hashtags to file.
+            using (StreamWriter hashtags = new StreamWriter(MessageFilter.hashtagPath, true))
+            {
+                hashtags.WriteLine("Hashtag trends: " + DateTime.Now);
+                for (int x = 0; x < MessageFilter.hashtagOccurence.Count; x+= 1)
+                    hashtags.WriteLine(MessageFilter.hashtagOccurence[x]);
+            }
 
+            using (StreamWriter mentions = new StreamWriter(MessageFilter.mentionPath, true))
+            {
+                mentions.WriteLine("Mentions: " + DateTime.Now);
+                for (int x = 0; x < MessageFilter.mentionList.Count; x += 1)
+                    mentions.WriteLine(MessageFilter.mentionList[x]);
+            }
+
+                MessageBox.Show("Saved to JSON");
+
+        }
+
+        //stop the user from going back too far.
+        private void PrevMsg_Click(object sender, RoutedEventArgs e)
+        {
+            if (i > 0)
+            {
+                inputHeader.Text = XmlData.messageList[i -= 1].Header;
+                inputBody.Text = XmlData.messageList[y -= 1].Body;
+            }
+            else
+            {
+                MessageBox.Show("You cannot go back further.");
+            }
         }
     }
 }

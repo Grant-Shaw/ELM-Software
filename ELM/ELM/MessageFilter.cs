@@ -28,14 +28,18 @@ namespace ELM
         public static string textSpeakPath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\textwords.csv");
         public static string incidentPath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\incidentList.txt");
         public static string SIRpath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\SIR List.txt");
+        public static string hashtagPath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\Hashtaglist.txt");
+        public static string mentionPath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\MentionList.txt");
 
         public static List<string> incidentList = new List<string>();
         public static List<string> emailList = new List<string>();
         public static List<string> mentionList = new List<string>();
         public static List<string> hashtagList = new List<string>();
-        public static Dictionary<string, string> dict = File.ReadLines(textSpeakPath).Select(line => line.Split(',')).ToDictionary(line => line[0], line => line[1]);
+        public static List<string> hashtagOccurence = new List<string>();
        
-        public static List<string> incidentDescriptions = File.ReadAllLines(incidentPath).ToList();
+
+        public static Dictionary<string, string> dict = File.ReadLines(textSpeakPath).Select(line => line.Split(',')).ToDictionary(line => line[0], line => line[1]);
+              public static List<string> incidentDescriptions = File.ReadAllLines(incidentPath).ToList();
           
 
 

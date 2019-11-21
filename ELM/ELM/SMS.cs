@@ -31,6 +31,12 @@ namespace ELM
         private string messagetype;
 
 
+        //displays the message type in the JSON
+        public string MessageType
+        {
+            get { return messagetype; }
+            set { messagetype = value; }
+        }
 
         //Property for Sender
         public override string Sender
@@ -40,12 +46,8 @@ namespace ELM
 
         }
 
-        //displays the message type in the JSON
-        public string MessageType
-        {
-            get { return messagetype; }
-            set { messagetype = value; }
-        }
+        
+       
 
         //property for the messageBody which checks to ensure that the message does not exceed 140 characters (151 to include sneder as it's read in).
         public override string MessageText

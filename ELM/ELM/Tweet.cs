@@ -62,11 +62,23 @@ namespace ELM
             
         public Tweet(string m) : base(m)
         {
-            this.MessageText = m;
-            FindSender();
-            MessageType = "Tweet";
-            FilterTextSpeak();
-            FindHashtags();
+            try
+            {
+                this.MessageText = m;
+                MessageType = "Tweet";
+                FindSender();
+                FilterTextSpeak();
+                FindHashtags();
+                foreach (var entry in MessageFilter.dict)
+                {
+                    MessageText = MessageText.Replace(" " + entry.Key + " ", " " + entry.Key + "<" + entry.Value + ">");
+                }
+                
+            }
+            catch(Exception b)
+            {
+                MessageBox.Show(b.Message);
+            }
 
 
         }
@@ -81,7 +93,7 @@ namespace ELM
 
         private void FindHashtags()
         {
-            Regex hashtagRegex = new Regex(@"/(^|\B)#(?![0-9_]+\b)([a-zA-Z0-9_]{1,30})(\b|\r)/g", RegexOptions.IgnoreCase);
+            Regex hashtagRegex = new Regex(@"\B(\#[a-zA-Z]+\b)(?!;)");
             MatchCollection matches = hashtagRegex.Matches(MessageText);
 
             foreach(Match m in matches)
@@ -97,7 +109,7 @@ namespace ELM
             try
             {
 
-                Regex tweetRegex = new Regex(@"^@[a-zA-Z](\.?[\w-]+)*$", RegexOptions.IgnoreCase);
+                Regex tweetRegex = new Regex(@"(?<=^|(?<=[^a-zA-Z0-9-\.]))@[A-Za-z0-9-]+(?=[^a-zA-Z0-9-_\.])");
 
                 MatchCollection matches = tweetRegex.Matches(MessageText);
 
