@@ -149,11 +149,35 @@ namespace ELM
         //this saved everything to JSON file , creates a list of quarantined emails and creates a serious incident report.
         private void FinishBtn_Click(object sender, RoutedEventArgs e)
         {
+            outputBody.Text = "";
+            string lists = "";
+
             //add show numbers of occurences of a hashtag.
             foreach (var grp in MessageFilter.hashtagList.GroupBy(i => i))
             {
                 MessageFilter.hashtagOccurence.Add(grp.Key + ":  " + grp.Count());
             }
+
+
+            lists += "Hashtag List: \n";
+            foreach(string x in MessageFilter.hashtagOccurence)
+            {
+                lists += x + "\n";
+            }
+            lists += "Mention list: \n";
+            foreach(string x in MessageFilter.mentionList)
+            {
+                lists += x + "\n";
+            }
+            lists += "SIR list: \n";
+            foreach(string x in MessageFilter.incidentList)
+            {
+                lists += x + "\n";
+            }
+            outputBody.Text = lists;
+
+
+
 
             //writes all json messages to file.
             using (StreamWriter file = new StreamWriter(MessageFilter.JSONpath, true))

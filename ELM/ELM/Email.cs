@@ -27,7 +27,7 @@ namespace ELM
         private string messageText;
         private string subject;
         private string messagetype;
-        private string centreCode;
+        
         
         
 
@@ -81,7 +81,7 @@ namespace ELM
                 this.FindSubject();
                 if (MessageType == "SIR")
                 {
-                    NatureOfIncident(centreCode);   
+                    NatureOfIncident(centreCodeFinder());   
                     
                 }
                 this.QuarantineURLs();
@@ -108,10 +108,10 @@ namespace ELM
             {
                 //using LINQ to find any matches within the messageText which match valid incident descriptions.
                 var result = MessageFilter.incidentDescriptions.Where(t => MessageText.Contains(t)).ToList();
-
                 //format string for SIR list to contain centre code and nature of incident.                
                 string incident = string.Format("Sport centre Code: {0},  Nature of Incident: {1}", code, result[0]);
-                        MessageFilter.incidentList.Add(incident);                                                                                                                   
+                        MessageFilter.incidentList.Add(incident);     
+                
             }
             catch(Exception U)
             {
@@ -122,20 +122,18 @@ namespace ELM
 
         }
 
-        private void centreCodeFinder()
+        //method for finding the centre code.
+        private string centreCodeFinder()
         {
             try
-            {
-                //searches for centre code matches in the text in format xx-xxx-xxx
-                Regex centreCodeFinder = new Regex(@"\d{2}-\d{3}-\d{3}", RegexOptions.IgnoreCase);
+            {                  
+                   //searches for centre code matches in the text in format xx-xxx-xxx
+                   Regex centreCodeFinder = new Regex(@"\d{2}-\d{3}-\d{3}");
                 MatchCollection centreCodeMatches = centreCodeFinder.Matches(MessageText);
-                if (centreCodeMatches[0].Value == null)
-                throw new Exception("Centre code invalid");                   
-                else
-                {
-                    centreCode = centreCodeMatches[0].Value;
-                    
-                }                            
+               
+                    string centreCode = centreCodeMatches[0].Value;
+                     return centreCode;
+                                        
             }
             catch(Exception h)
             {               
