@@ -9,6 +9,9 @@ using System.Xml.Serialization;
 
 namespace ELM
 {
+
+    //class which defines the properties of an XML message (used by deserializer)
+
     [XmlRoot(ElementName = "Message")]
     public class XMLMessage
     {

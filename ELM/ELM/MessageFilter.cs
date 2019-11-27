@@ -21,6 +21,9 @@ using System.IO;
 
 namespace ELM
 {
+    /// <summary>
+    /// A static class which is used to store filepaths and lists which will be written to files and printed later.
+    /// </summary>
     public static class MessageFilter
     {
         public static string JSONpath = System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + "\\jsontest.Json");
@@ -37,7 +40,7 @@ namespace ELM
         public static List<string> hashtagList = new List<string>();
         public static List<string> hashtagOccurence = new List<string>();
        
-
+        //reads Textspeak abbreviations from file and adds to dictionary.
         public static Dictionary<string, string> dict = File.ReadLines(textSpeakPath).Select(line => line.Split(',')).ToDictionary(line => line[0], line => line[1]);
               public static List<string> incidentDescriptions = File.ReadAllLines(incidentPath).ToList();
           

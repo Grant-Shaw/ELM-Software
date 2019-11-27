@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 
 namespace ELM
 {
+    //a class which creates a list of type XML message.
     public class XMLMessageList
     {
         [XmlElement("Message")]

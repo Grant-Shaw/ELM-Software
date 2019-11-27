@@ -20,9 +20,12 @@ using System.Text.RegularExpressions;
 
 namespace ELM
 {
+    /// <summary>
+    /// Class for email messages
+    /// </summary>
     class Email : Message
     {
-
+        //fields
         private string sender;
         private string messageText;
         private string subject;
@@ -31,7 +34,7 @@ namespace ELM
         
         
 
-
+        //properties
 
         public string MessageType
         {

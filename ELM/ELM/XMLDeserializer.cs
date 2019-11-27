@@ -8,6 +8,9 @@ using System.IO;
 
 namespace ELM
 {
+    /// <summary>
+    /// Reads XML file with messages and then deserializes each XML object into a list of messages.
+    /// </summary>
     public class XMLDeserializer
     {
         public XMLMessageList deserializeXML()

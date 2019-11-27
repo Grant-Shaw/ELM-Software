@@ -20,6 +20,10 @@ using System.Text.RegularExpressions;
 
 namespace ELM
 {
+    /// <summary>
+    /// Class which deals with Tweets
+    /// </summary>
+
     class Tweet : Message
     {
 
@@ -60,6 +64,7 @@ namespace ELM
 
         }
             
+        //constructor
         public Tweet(string m) : base(m)
         {
             try
@@ -83,6 +88,7 @@ namespace ELM
 
         }
 
+        //expand all textspeak abbreviations in messageText
         private void FilterTextSpeak()
         {
             foreach (var entry in MessageFilter.dict)
@@ -91,6 +97,7 @@ namespace ELM
             }
         }
 
+        //find hashtags and then add them to hashtag list
         private void FindHashtags()
         {
             Regex hashtagRegex = new Regex(@"\B(\#[a-zA-Z]+\b)(?!;)");
@@ -104,6 +111,7 @@ namespace ELM
 
         }
 
+        //Find the sender by matching to the first twitter username
         private void FindSender()
         {
             try
